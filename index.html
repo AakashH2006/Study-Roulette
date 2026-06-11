@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Study Roulette</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f9f8f5;
+      --surface: #ffffff;
+      --surface-alt: #f2f1ee;
+      --border: #e4e2dc;
+      --text: #1a1917;
+      --text-muted: #6b6963;
+      --text-hint: #a09d97;
+      --purple: #7F77DD;
+      --purple-light: #eeedfe;
+      --purple-dark: #534AB7;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #161512;
+        --surface: #1f1e1b;
+        --surface-alt: #2a2926;
+        --border: #333129;
+        --text: #f0ede8;
+        --text-muted: #a09d97;
+        --text-hint: #6b6963;
+        --purple-light: #26215C;
+        --purple-dark: #AFA9EC;
+      }
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 2rem 1.5rem 1.5rem;
+      max-width: 560px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--purple);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-icon svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: #fff;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    h1 {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .tagline {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    main {
+      flex: 1;
+      padding: 0 1.5rem 3rem;
+      max-width: 560px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Input area */
+    .input-group {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      height: 40px;
+      padding: 0 12px;
+      font-size: 14px;
+      font-family: inherit;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input[type="text"]::placeholder { color: var(--text-hint); }
+    input[type="text"]:focus { border-color: var(--purple); }
+
+    .btn {
+      height: 40px;
+      padding: 0 16px;
+      font-size: 14px;
+      font-family: inherit;
+      font-weight: 500;
+      border-radius: 8px;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      transition: background 0.15s, transform 0.1s;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn:hover { background: var(--surface-alt); }
+    .btn:active { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    .btn-primary {
+      background: var(--purple);
+      border-color: var(--purple-dark);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--purple-dark); }
+
+    /* Tags */
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-height: 36px;
+      margin-bottom: 1.5rem;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--purple-light);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 10px 4px 12px;
+      font-size: 13px;
+      color: var(--text);
+      animation: popIn 0.15s ease;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.85); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .tag-remove {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-hint);
+      font-size: 16px;
+      line-height: 1;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      transition: color 0.1s;
+    }
+    .tag-remove:hover { color: var(--text); }
+
+    .hint { font-size: 13px; color: var(--text-hint); padding: 6px 0; }
+
+    /* Divider */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.5rem 0;
+    }
+
+    /* Spin button */
+    .spin-wrap { margin-bottom: 1.5rem; }
+
+    .btn-spin {
+      width: 100%;
+      height: 48px;
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 10px;
+      justify-content: center;
+    }
+
+    /* Result card */
+    .result-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      animation: slideUp 0.25s ease;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-subject {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .result-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .meta-box {
+      background: var(--surface-alt);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+    }
+
+    .meta-label {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-hint);
+      margin-bottom: 4px;
+    }
+
+    .meta-value {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .challenge-box {
+      background: var(--purple-light);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.875rem 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .challenge-label {
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--purple);
+      margin-bottom: 6px;
+    }
+
+    .challenge-text {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    /* Timer */
+    .timer-section { margin-top: 4px; }
+
+    .timer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .timer-countdown {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .timer-done {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--purple);
+    }
+
+    .timer-track {
+      height: 5px;
+      background: var(--surface-alt);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .timer-fill {
+      height: 100%;
+      background: var(--purple);
+      border-radius: 4px;
+      transition: width 1s linear;
+    }
+
+    /* Spin again row */
+    .spin-again-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 12px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 12px;
+      color: var(--text-hint);
+    }
+
+    @media (max-width: 420px) {
+      .result-meta { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z"/></svg>
+    </div>
+    <h1>Study Roulette</h1>
+  </div>
+  <p class="tagline">Add your subjects, spin the wheel, and get your next study session.</p>
+</header>
+
+<main>
+  <div class="input-group">
+    <input type="text" id="subject-input" placeholder="e.g. Calculus, World War II, Python…" maxlength="60" autocomplete="off" />
+    <button class="btn" onclick="addSubject()">+ Add</button>
+  </div>
+
+  <div class="tags" id="tag-list">
+    <span class="hint">No subjects yet — add some above.</span>
+  </div>
+
+  <hr class="divider" />
+
+  <div class="spin-wrap">
+    <button class="btn btn-primary btn-spin" id="spin-btn" onclick="spin()" disabled>
+      🎲 Spin
+    </button>
+  </div>
+
+  <div id="result-area"></div>
+</main>
+
+<footer>Study Roulette — stay focused, one session at a time.</footer>
+
+<script>
+  const subjects = [];
+  const challenges = [
+    "Explain this topic to an imaginary class as if it's your first day teaching.",
+    "Write down everything you know about this topic — without looking at any notes.",
+    "Come up with 5 exam-style questions and answer them from memory.",
+    "Create a mind map that connects this topic to at least 3 other things you've learned.",
+    "Find the hardest concept in this topic and break it down step by step.",
+    "Make up an analogy or short story that explains the core idea to a 12-year-old.",
+    "List 3 things you're still unsure about, then try to resolve each one.",
+    "Summarize the entire topic in under 5 bullet points — no fluff.",
+    "Teach it out loud to yourself as if recording a lesson video.",
+    "Sketch a diagram or visual summary of the key ideas — no words allowed."
+  ];
+
+  let timerInterval = null;
+  let timerStart = null;
+  let timerTotal = 0;
+
+  const inputEl = document.getElementById('subject-input');
+  const spinBtn = document.getElementById('spin-btn');
+  const tagList = document.getElementById('tag-list');
+  const resultArea = document.getElementById('result-area');
+
+  inputEl.addEventListener('keydown', e => { if (e.key === 'Enter') addSubject(); });
+
+  function addSubject() {
+    const val = inputEl.value.trim();
+    if (!val) return;
+    if (subjects.includes(val)) { inputEl.select(); return; }
+    subjects.push(val);
+    inputEl.value = '';
+    inputEl.focus();
+    renderTags();
+    spinBtn.disabled = false;
+  }
+
+  function removeSubject(i) {
+    subjects.splice(i, 1);
+    renderTags();
+    if (subjects.length === 0) spinBtn.disabled = true;
+  }
+
+  function renderTags() {
+    if (subjects.length === 0) {
+      tagList.innerHTML = '<span class="hint">No subjects yet — add some above.</span>';
+      return;
+    }
+    tagList.innerHTML = subjects.map((s, i) =>
+      `<span class="tag">${escHtml(s)}<button class="tag-remove" onclick="removeSubject(${i})" aria-label="Remove ${escHtml(s)}">×</button></span>`
+    ).join('');
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function spin() {
+    if (subjects.length === 0) return;
+    if (timerInterval) clearInterval(timerInterval);
+
+    const subject   = subjects[Math.floor(Math.random() * subjects.length)];
+    const duration  = Math.floor(Math.random() * 26) + 25;
+    const challenge = challenges[Math.floor(Math.random() * challenges.length)];
+
+    timerTotal = duration * 60;
+    timerStart = Date.now();
+
+    resultArea.innerHTML = `
+      <div class="result-card">
+        <p class="result-subject">📚 ${escHtml(subject)}</p>
+        <div class="result-meta">
+          <div class="meta-box">
+            <p class="meta-label">Duration</p>
+            <p class="meta-value">${duration} min</p>
+          </div>
+          <div class="meta-box">
+            <p class="meta-label">Subject</p>
+            <p class="meta-value" style="font-size:15px;padding-top:3px">${escHtml(subject)}</p>
+          </div>
+        </div>
+        <div class="challenge-box">
+          <p class="challenge-label">⚡ Challenge</p>
+          <p class="challenge-text">${escHtml(challenge)}</p>
+        </div>
+        <div class="timer-section">
+          <div class="timer-top">
+            <span class="timer-countdown" id="tlabel">${duration}:00 remaining</span>
+          </div>
+          <div class="timer-track">
+            <div class="timer-fill" id="tbar" style="width:100%"></div>
+          </div>
+        </div>
+        <div class="spin-again-row">
+          <button class="btn" onclick="spin()">🎲 Spin again</button>
+        </div>
+      </div>`;
+
+    runTimer(timerTotal);
+  }
+
+  function runTimer(total) {
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      const elapsed   = Math.floor((Date.now() - timerStart) / 1000);
+      const remaining = total - elapsed;
+      const tbar  = document.getElementById('tbar');
+      const tlabel = document.getElementById('tlabel');
+      if (!tbar || !tlabel) { clearInterval(timerInterval); return; }
+      if (remaining <= 0) {
+        clearInterval(timerInterval);
+        tbar.style.width = '0%';
+        tlabel.className = 'timer-done';
+        tlabel.textContent = "Time's up! Great work 🎉";
+        return;
+      }
+      const pct = Math.round((remaining / total) * 100);
+      const m   = Math.floor(remaining / 60);
+      const s   = remaining % 60;
+      tbar.style.width  = pct + '%';
+      tlabel.textContent = `${m}:${s.toString().padStart(2, '0')} remaining`;
+    }, 1000);
+  }
+</script>
+</body>
+</html>
